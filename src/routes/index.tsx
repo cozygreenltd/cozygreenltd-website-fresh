@@ -16,10 +16,10 @@ import { QuoteForm } from "@/components/quote-form";
 import { Link } from "@/lib/navigation";
 import { usePageMeta } from "@/lib/use-page-meta";
 import hero from "@/assets/hero-landscape.jpg";
-import projectBeforeAfter from "@/assets/project-before-after.png";
 import serviceCleanup from "@/assets/service-cleanup.png";
 import serviceGarden from "@/assets/service-garden.png";
 import serviceHardscape from "@/assets/service-hardscape.png";
+import serviceLawn from "@/assets/service-lawn.png";
 import serviceTree from "@/assets/service-tree.png";
 
 const BADGES = [
@@ -48,9 +48,9 @@ const WHY_CHOOSE = [
 
 const PROJECT_SAMPLES = [
   {
-    title: "Suburban Lawn Revival",
+    title: "Outdoor Space Renewal",
     category: "Lawn",
-    img: projectBeforeAfter,
+    img: serviceLawn,
   },
   {
     title: "Pollinator Garden Refresh",
@@ -58,7 +58,7 @@ const PROJECT_SAMPLES = [
     img: serviceGarden,
   },
   {
-    title: "Flagstone Patio Build",
+    title: "Paver Patio with Fire Pit",
     category: "Hardscape",
     img: serviceHardscape,
   },
@@ -71,7 +71,7 @@ const SERVICES = [
     img: serviceCleanup,
   },
   {
-    name: "Garden Maintenance",
+    name: "Garden Bed Maintenance",
     text: "Routine mowing, edging, weeding and ongoing garden care.",
     img: serviceGarden,
   },
@@ -117,10 +117,10 @@ export function HomePage() {
             className="text-white"
           >
             <span className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-white/10 backdrop-blur border border-white/20 text-sm">
-              <Leaf className="w-4 h-4" /> Local · Licensed · Insured
+              <Leaf className="w-4 h-4" /> Local · Licensed · Insured · Bonded
             </span>
             <h1 className="mt-5 text-4xl sm:text-5xl lg:text-6xl font-bold leading-tight">
-              Transform Your Outdoor Space Into Something Beautiful
+              We dont just maintain yards we transform them
             </h1>
             <p className="mt-5 text-lg text-white/85 max-w-xl">
               Cozy Green Landscaping designs, builds and maintains stunning outdoor
@@ -318,7 +318,7 @@ export function HomePage() {
                 </div>
                 <h3 className="mt-4 text-2xl font-bold">Cozy Green Landscaping</h3>
                 <p className="mt-3 text-muted-foreground">
-                  Open Monday to Saturday, 8am to 6pm. We serve the greater metro area and nearby suburbs.
+                  Open Monday to Saturday, 8am to 6pm. Serving distinguished properties throughout Calgary and surrounding areas.
                 </p>
               </div>
               <div className="mt-6">

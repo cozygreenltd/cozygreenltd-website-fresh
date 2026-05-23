@@ -5,10 +5,10 @@ import { Link } from "@/lib/navigation";
 import { usePageMeta } from "@/lib/use-page-meta";
 import { CheckCircle2 } from "lucide-react";
 import servicesHero from "@/assets/hero-landscape.jpg";
-import serviceLawn from "@/assets/service-lawn.png";
+import serviceLawn from "@/assets/snow.png";
 import serviceGarden from "@/assets/service-garden.png";
 import serviceTree from "@/assets/service-tree.png";
-import serviceHardscape from "@/assets/service-hardscape.png";
+import serviceHardscape from "@/assets/carpentry.png";
 import serviceCleanup from "@/assets/service-cleanup.png";
 import projectBeforeAfter from "@/assets/project-before-after.png";
 
@@ -20,10 +20,10 @@ const SERVICES = [
     bullets: ["Leaf and debris removal", "Bed edging and mulch refreshes", "Final haul-off and detailing"],
   },
   {
-    name: "Garden Maintenance",
+    name: "Garden Bed Maintenance",
     img: serviceGarden,
     desc: "Ongoing upkeep that keeps planting beds healthy, neat and consistently beautiful.",
-    bullets: ["Weeding and pruning", "Mowing and edging", "Fertilization programs"],
+    bullets: ["Weeding and Bed Maintenance ", "Pruning and Trimming", "Seasonal Planting and Enhancement"],
   },
   {
     name: "Garden Renovations",
