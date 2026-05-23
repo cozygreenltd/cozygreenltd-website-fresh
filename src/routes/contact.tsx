@@ -1,16 +1,8 @@
-import { createFileRoute } from "@tanstack/react-router";
 import { Mail, Phone, Clock, MapPin, Instagram, Facebook } from "lucide-react";
 import { QuoteForm } from "@/components/quote-form";
-
-export const Route = createFileRoute("/contact")({
-  head: () => ({
-    meta: [
-      { title: "Contact — Cozy Green Landscaping" },
-      { name: "description", content: "Get in touch with Cozy Green Landscaping. Phone, email, business hours and free quote form." },
-    ],
-  }),
-  component: Contact,
-});
+import { PageHero } from "@/components/page-hero";
+import { usePageMeta } from "@/lib/use-page-meta";
+import contactHero from "@/assets/service-garden.png";
 
 function InfoItem({
   icon: Icon,
@@ -39,15 +31,20 @@ function InfoItem({
   return href ? <a href={href} className="block hover:opacity-90">{content}</a> : content;
 }
 
-function Contact() {
+export function ContactPage() {
+  usePageMeta({
+    title: "Contact — Cozy Green Landscaping",
+    description:
+      "Get in touch with Cozy Green Landscaping. Phone, email, business hours and free quote form.",
+  });
+
   return (
     <>
-      <section className="bg-primary text-primary-foreground py-20">
-        <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
-          <h1 className="text-4xl sm:text-5xl font-bold">Let's talk about your yard</h1>
-          <p className="mt-5 text-lg opacity-90">Free quotes within 24 hours.</p>
-        </div>
-      </section>
+      <PageHero
+        imageSrc={contactHero}
+        title="Let's talk about your yard"
+        description="Free quotes within 24 hours."
+      />
 
       <section className="py-20">
         <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 grid lg:grid-cols-2 gap-10">

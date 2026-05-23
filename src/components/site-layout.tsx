@@ -1,12 +1,20 @@
 import { ReactNode, useEffect, useState } from "react";
-import { Link, useRouterState } from "@tanstack/react-router";
 import { motion, AnimatePresence } from "framer-motion";
-import { Menu, X, Phone, MessageCircle, Leaf } from "lucide-react";
+import { Menu, X, Phone, MessageCircle } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { ChatWidget } from "@/components/chat-widget";
 import { Toaster } from "@/components/ui/sonner";
+import { Link, usePathname } from "@/lib/navigation";
 
 const NAV = [
+  { to: "/", label: "Home" },
+  { to: "/about", label: "About" },
+  { to: "/services", label: "Services" },
+  { to: "/projects", label: "Projects" },
+  { to: "/contact", label: "Contact" },
+];
+
+const FOOTER_NAV = [
   { to: "/", label: "Home" },
   { to: "/about", label: "About" },
   { to: "/services", label: "Services" },
@@ -20,7 +28,9 @@ const NAV = [
 export function SiteLayout({ children }: { children: ReactNode }) {
   const [open, setOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
-  const { location } = useRouterState();
+  const pathname = usePathname();
+  const isHome = pathname === "/";
+  const glassyHeader = !isHome || scrolled;
 
   useEffect(() => {
     const onScroll = () => setScrolled(window.scrollY > 20);
@@ -31,34 +41,49 @@ export function SiteLayout({ children }: { children: ReactNode }) {
 
   useEffect(() => {
     setOpen(false);
-    window.scrollTo({ top: 0, behavior: "instant" as ScrollBehavior });
-  }, [location.pathname]);
+    window.scrollTo(0, 0);
+  }, [pathname]);
 
   return (
     <div className="min-h-screen flex flex-col bg-background text-foreground">
       <header
         className={`fixed top-0 inset-x-0 z-50 transition-all duration-300 ${
-          scrolled ? "bg-background/90 backdrop-blur border-b border-border shadow-sm" : "bg-transparent"
+          glassyHeader
+            ? "bg-background/70 backdrop-blur-xl border-b border-border/60 shadow-sm"
+            : "bg-transparent"
         }`}
       >
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
-          <Link to="/" className="flex items-center gap-2 font-semibold text-lg">
-            <span className="w-9 h-9 rounded-full bg-primary text-primary-foreground grid place-items-center">
-              <Leaf className="w-5 h-5" />
-            </span>
-            <span className={scrolled ? "text-foreground" : "text-foreground"}>
-              Cozy Green
-            </span>
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-24 flex items-center justify-between">
+          <Link
+            to="/"
+            className={`flex items-center gap-3 font-semibold text-3xl transition-colors ${
+              glassyHeader
+                ? "text-foreground"
+                : "text-white drop-shadow-[0_1px_2px_rgba(0,0,0,0.55)]"
+            }`}
+          >
+            <img
+              src="/logo.jpg"
+              alt="Cozy Green Landscaping logo"
+              className="h-12 w-12 rounded-full object-cover bg-white shadow-sm"
+            />
+            <span>Cozy Green</span>
           </Link>
-          <nav className="hidden lg:flex items-center gap-1">
+          <nav className="hidden lg:flex items-center gap-2 text-lg">
             {NAV.map((n) => {
-              const active = location.pathname === n.to;
+              const active = pathname === n.to;
               return (
                 <Link
                   key={n.to}
                   to={n.to}
-                  className={`px-3 py-2 rounded-md text-sm font-medium transition-colors ${
-                    active ? "text-primary" : "text-foreground/80 hover:text-primary"
+                  className={`px-4 py-2 rounded-md text-lg font-semibold transition-colors ${
+                    glassyHeader
+                      ? active
+                        ? "text-primary"
+                        : "text-foreground/80 hover:text-primary"
+                      : active
+                        ? "text-accent"
+                        : "text-white/90 hover:text-accent drop-shadow-[0_1px_2px_rgba(0,0,0,0.55)]"
                   }`}
                 >
                   {n.label}
@@ -67,12 +92,16 @@ export function SiteLayout({ children }: { children: ReactNode }) {
             })}
           </nav>
           <div className="hidden lg:block">
-            <Button asChild>
+            <Button asChild className="h-12 px-6 text-lg">
               <Link to="/contact">Get a Free Quote</Link>
             </Button>
           </div>
           <button
-            className="lg:hidden p-2 rounded-md hover:bg-muted"
+            className={`lg:hidden p-2 rounded-md transition-colors ${
+              scrolled
+                ? "text-foreground hover:bg-muted"
+                : "text-white drop-shadow-[0_1px_2px_rgba(0,0,0,0.55)] hover:bg-white/10"
+            }`}
             onClick={() => setOpen((o) => !o)}
             aria-label="Toggle menu"
           >
@@ -85,14 +114,14 @@ export function SiteLayout({ children }: { children: ReactNode }) {
               initial={{ height: 0, opacity: 0 }}
               animate={{ height: "auto", opacity: 1 }}
               exit={{ height: 0, opacity: 0 }}
-              className="lg:hidden overflow-hidden bg-background border-t border-border"
+              className="lg:hidden overflow-hidden bg-background/95 backdrop-blur border-t border-border"
             >
-              <div className="px-4 py-3 flex flex-col gap-1">
+              <div className="px-4 py-4 flex flex-col gap-1">
                 {NAV.map((n) => (
                   <Link
                     key={n.to}
                     to={n.to}
-                    className="px-3 py-2 rounded-md text-sm font-medium hover:bg-muted"
+                    className="px-3 py-2 rounded-md text-lg font-semibold hover:bg-muted"
                   >
                     {n.label}
                   </Link>
@@ -108,7 +137,7 @@ export function SiteLayout({ children }: { children: ReactNode }) {
 
       <AnimatePresence mode="wait">
         <motion.main
-          key={location.pathname}
+          key={pathname}
           initial={{ opacity: 0, y: 8 }}
           animate={{ opacity: 1, y: 0 }}
           exit={{ opacity: 0, y: -8 }}
@@ -153,7 +182,11 @@ function Footer() {
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12 grid md:grid-cols-4 gap-8">
         <div>
           <div className="flex items-center gap-2 font-semibold text-lg mb-3">
-            <Leaf className="w-5 h-5" />
+            <img
+              src="/logo.jpg"
+              alt="Cozy Green Landscaping logo"
+              className="h-8 w-8 rounded-full object-cover bg-white"
+            />
             Cozy Green Landscaping
           </div>
           <p className="text-sm opacity-80">
@@ -163,7 +196,7 @@ function Footer() {
         <div>
           <h4 className="font-semibold mb-3">Explore</h4>
           <ul className="space-y-2 text-sm opacity-90">
-            {NAV.map((n) => (
+            {FOOTER_NAV.map((n) => (
               <li key={n.to}>
                 <Link to={n.to} className="hover:underline">
                   {n.label}

@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { z } from "zod";
 import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
@@ -6,6 +6,9 @@ import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { ImagePlus, Upload, X } from "lucide-react";
+import { cn } from "@/lib/utils";
+import { AnimatedImage } from "@/components/animated-image";
 
 const schema = z.object({
   name: z.string().trim().min(2, "Please enter your name").max(80),
@@ -25,6 +28,12 @@ const SERVICES = [
   "Other",
 ];
 
+type Attachment = {
+  id: string;
+  file: File;
+  url: string;
+};
+
 export function QuoteForm({
   variant = "card",
   defaultService,
@@ -39,9 +48,44 @@ export function QuoteForm({
     service: defaultService ?? "",
     message: "",
   });
+  const [attachments, setAttachments] = useState<Attachment[]>([]);
+  const [dragActive, setDragActive] = useState(false);
   const [submitting, setSubmitting] = useState(false);
+  const fileInputRef = useRef<HTMLInputElement>(null);
 
   const onChange = (k: string, v: string) => setForm((f) => ({ ...f, [k]: v }));
+
+  const addFiles = (files: FileList | File[]) => {
+    const incoming = Array.from(files).filter((file) => file.type.startsWith("image/"));
+    if (!incoming.length) return;
+
+    setAttachments((current) => {
+      const currentIds = new Set(current.map((item) => item.id));
+      const next = incoming
+        .map((file) => ({
+          id: `${file.name}-${file.size}-${file.lastModified}`,
+          file,
+          url: URL.createObjectURL(file),
+        }))
+        .filter((item) => !currentIds.has(item.id));
+
+      return [...current, ...next];
+    });
+  };
+
+  const removeAttachment = (id: string) => {
+    setAttachments((current) => {
+      const target = current.find((item) => item.id === id);
+      if (target) URL.revokeObjectURL(target.url);
+      return current.filter((item) => item.id !== id);
+    });
+  };
+
+  useEffect(() => {
+    return () => {
+      attachments.forEach((item) => URL.revokeObjectURL(item.url));
+    };
+  }, [attachments]);
 
   const submit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -53,8 +97,14 @@ export function QuoteForm({
     setSubmitting(true);
     setTimeout(() => {
       setSubmitting(false);
-      toast.success("Thanks! We'll be in touch within 24 hours.");
+      toast.success(
+        attachments.length
+          ? `Thanks! We'll be in touch within 24 hours. (${attachments.length} image${attachments.length === 1 ? "" : "s"} attached)`
+          : "Thanks! We'll be in touch within 24 hours.",
+      );
       setForm({ name: "", email: "", phone: "", service: defaultService ?? "", message: "" });
+      attachments.forEach((item) => URL.revokeObjectURL(item.url));
+      setAttachments([]);
     }, 700);
   };
 
@@ -106,6 +156,92 @@ export function QuoteForm({
             rows={4}
             maxLength={1000}
           />
+        </div>
+        <div className="sm:col-span-2">
+          <Label>Upload photos</Label>
+          <div
+            role="button"
+            tabIndex={0}
+            onClick={() => fileInputRef.current?.click()}
+            onKeyDown={(e) => {
+              if (e.key === "Enter" || e.key === " ") {
+                e.preventDefault();
+                fileInputRef.current?.click();
+              }
+            }}
+            onDragEnter={(e) => {
+              e.preventDefault();
+              e.stopPropagation();
+              setDragActive(true);
+            }}
+            onDragOver={(e) => {
+              e.preventDefault();
+              e.stopPropagation();
+              setDragActive(true);
+            }}
+            onDragLeave={(e) => {
+              e.preventDefault();
+              e.stopPropagation();
+              setDragActive(false);
+            }}
+            onDrop={(e) => {
+              e.preventDefault();
+              e.stopPropagation();
+              setDragActive(false);
+              addFiles(e.dataTransfer.files);
+            }}
+            className={cn(
+              "mt-2 cursor-pointer rounded-2xl border border-dashed bg-muted/30 p-5 text-center transition-colors",
+              dragActive ? "border-primary bg-primary/5" : "border-border hover:bg-muted/50",
+            )}
+          >
+            <input
+              ref={fileInputRef}
+              type="file"
+              accept="image/*"
+              multiple
+              className="hidden"
+              onChange={(e) => {
+                if (e.target.files) addFiles(e.target.files);
+                e.currentTarget.value = "";
+              }}
+            />
+            <div className="mx-auto flex max-w-sm flex-col items-center gap-2">
+              <div className="flex h-12 w-12 items-center justify-center rounded-full bg-primary text-primary-foreground">
+                <Upload className="h-5 w-5" />
+              </div>
+              <div className="font-medium">Drag and drop photos here</div>
+              <p className="text-sm text-muted-foreground">
+                or click to browse local files. PNG, JPG, WEBP supported.
+              </p>
+            </div>
+          </div>
+          {attachments.length > 0 && (
+            <div className="mt-4 grid grid-cols-2 gap-3 sm:grid-cols-3">
+              {attachments.map((item) => (
+                <div key={item.id} className="group relative overflow-hidden rounded-xl border border-border bg-card">
+                  <AnimatedImage
+                    src={item.url}
+                    alt={item.file.name}
+                    className="h-28 w-full object-cover"
+                    zoomDuration={9}
+                  />
+                  <button
+                    type="button"
+                    onClick={() => removeAttachment(item.id)}
+                    className="absolute right-2 top-2 rounded-full bg-black/70 p-1 text-white opacity-90 transition-opacity hover:opacity-100"
+                    aria-label={`Remove ${item.file.name}`}
+                  >
+                    <X className="h-4 w-4" />
+                  </button>
+                  <div className="flex items-center gap-2 p-3">
+                    <ImagePlus className="h-4 w-4 text-primary" />
+                    <span className="truncate text-xs text-muted-foreground">{item.file.name}</span>
+                  </div>
+                </div>
+              ))}
+            </div>
+          )}
         </div>
       </div>
       <Button type="submit" disabled={submitting} className="w-full mt-4" size="lg">

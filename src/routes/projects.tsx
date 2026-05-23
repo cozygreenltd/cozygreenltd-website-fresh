@@ -1,41 +1,46 @@
-import { createFileRoute } from "@tanstack/react-router";
 import { useState } from "react";
-
-export const Route = createFileRoute("/projects")({
-  head: () => ({
-    meta: [
-      { title: "Projects — Cozy Green Landscaping" },
-      { name: "description", content: "Before-and-after landscaping projects from our portfolio." },
-    ],
-  }),
-  component: Projects,
-});
+import { PageHero } from "@/components/page-hero";
+import { AnimatedImage } from "@/components/animated-image";
+import { usePageMeta } from "@/lib/use-page-meta";
+import projectsHero from "@/assets/project-before-after.png";
+import projectLawn from "@/assets/service-lawn.png";
+import projectGarden from "@/assets/service-garden.png";
+import projectHardscape from "@/assets/service-hardscape.png";
+import projectLighting from "@/assets/service-lighting.png";
+import projectTree from "@/assets/service-tree.png";
+import projectCleanup from "@/assets/service-cleanup.png";
+import projectHero from "@/assets/hero-landscape.jpg";
+import projectHeroPng from "@/assets/hero-landscape.png";
 
 const PROJECTS = [
-  { cat: "Lawn", title: "Suburban Lawn Revival", img: "https://images.unsplash.com/photo-1558904541-efa843a96f01?w=1000&q=80" },
-  { cat: "Garden", title: "Pollinator Garden Refresh", img: "https://images.unsplash.com/photo-1416879595882-3373a0480b5b?w=1000&q=80" },
-  { cat: "Hardscape", title: "Flagstone Patio Build", img: "https://images.unsplash.com/photo-1502005229762-cf1b2da7c5d6?w=1000&q=80" },
-  { cat: "Lighting", title: "Modern Path Lighting", img: "https://images.unsplash.com/photo-1600585154340-be6161a56a0c?w=1000&q=80" },
-  { cat: "Garden", title: "Front Yard Makeover", img: "https://images.unsplash.com/photo-1585320806297-9794b3e4eeae?w=1000&q=80" },
-  { cat: "Lawn", title: "Estate Lawn Care", img: "https://images.unsplash.com/photo-1592417817098-8fd3d9eb14a5?w=1000&q=80" },
-  { cat: "Hardscape", title: "Backyard Fire Pit", img: "https://images.unsplash.com/photo-1574482620811-1aa16ffe3c82?w=1000&q=80" },
-  { cat: "Garden", title: "Cottage Border Design", img: "https://images.unsplash.com/photo-1525498128493-380d1990a112?w=1000&q=80" },
-  { cat: "Lighting", title: "Garden Uplighting", img: "https://images.unsplash.com/photo-1601928320104-066bb541ade2?w=1000&q=80" },
+  { cat: "Lawn", title: "Suburban Lawn Revival", img: projectLawn },
+  { cat: "Garden", title: "Pollinator Garden Refresh", img: projectGarden },
+  { cat: "Hardscape", title: "Flagstone Patio Build", img: projectHardscape },
+  { cat: "Lighting", title: "Modern Path Lighting", img: projectLighting },
+  { cat: "Garden", title: "Front Yard Makeover", img: projectHeroPng },
+  { cat: "Lawn", title: "Estate Lawn Care", img: projectHero },
+  { cat: "Hardscape", title: "Backyard Fire Pit", img: projectsHero },
+  { cat: "Garden", title: "Cottage Border Design", img: projectTree },
+  { cat: "Lighting", title: "Garden Uplighting", img: projectCleanup },
 ];
 
 const CATS = ["All", "Lawn", "Garden", "Hardscape", "Lighting"];
 
-function Projects() {
+export function ProjectsPage() {
+  usePageMeta({
+    title: "Projects — Cozy Green Landscaping",
+    description: "Before-and-after landscaping projects from our portfolio.",
+  });
+
   const [active, setActive] = useState("All");
   const items = active === "All" ? PROJECTS : PROJECTS.filter((p) => p.cat === active);
   return (
     <>
-      <section className="bg-primary text-primary-foreground py-20">
-        <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
-          <h1 className="text-4xl sm:text-5xl font-bold">Before &amp; after</h1>
-          <p className="mt-5 text-lg opacity-90">A look at recent transformations from our portfolio.</p>
-        </div>
-      </section>
+      <PageHero
+        imageSrc={projectsHero}
+        title="Before &amp; after"
+        description="A look at recent transformations from our portfolio."
+      />
 
       <section className="py-20">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -55,7 +60,13 @@ function Projects() {
           <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-6">
             {items.map((p) => (
               <div key={p.title} className="group relative overflow-hidden rounded-2xl aspect-[4/3]">
-                <img src={p.img} alt={p.title} loading="lazy" className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700" />
+                <AnimatedImage
+                  src={p.img}
+                  alt={p.title}
+                  loading="lazy"
+                  className="w-full h-full object-cover"
+                  zoomDuration={12}
+                />
                 <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity flex items-end p-5">
                   <div className="text-white">
                     <div className="text-xs uppercase tracking-widest opacity-80">{p.cat}</div>

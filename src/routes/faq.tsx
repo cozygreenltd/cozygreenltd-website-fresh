@@ -1,16 +1,9 @@
-import { createFileRoute, Link } from "@tanstack/react-router";
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
 import { Button } from "@/components/ui/button";
-
-export const Route = createFileRoute("/faq")({
-  head: () => ({
-    meta: [
-      { title: "FAQ — Cozy Green Landscaping" },
-      { name: "description", content: "Answers to common questions about pricing, scheduling, service areas, consultations and more." },
-    ],
-  }),
-  component: FAQ,
-});
+import { PageHero } from "@/components/page-hero";
+import { Link } from "@/lib/navigation";
+import { usePageMeta } from "@/lib/use-page-meta";
+import faqHero from "@/assets/service-cleanup.png";
 
 const FAQS = [
   { q: "How much do your services cost?", a: "Pricing depends on the size and scope of your project. Lawn maintenance starts around $79/visit; design and hardscape projects are custom-quoted. We provide transparent, written estimates after a free consultation." },
@@ -23,15 +16,20 @@ const FAQS = [
   { q: "Do you use eco-friendly practices?", a: "We prioritize native plantings, water-wise design and low-impact methods whenever possible." },
 ];
 
-function FAQ() {
+export function FAQPage() {
+  usePageMeta({
+    title: "FAQ — Cozy Green Landscaping",
+    description:
+      "Answers to common questions about pricing, scheduling, service areas, consultations and more.",
+  });
+
   return (
     <>
-      <section className="bg-primary text-primary-foreground py-20">
-        <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
-          <h1 className="text-4xl sm:text-5xl font-bold">Frequently asked questions</h1>
-          <p className="mt-5 text-lg opacity-90">Don't see your question? <Link to="/contact" className="underline">Ask us directly</Link>.</p>
-        </div>
-      </section>
+      <PageHero
+        imageSrc={faqHero}
+        title="Frequently asked questions"
+        description="Don't see your question? Ask us directly."
+      />
       <section className="py-20">
         <div className="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8">
           <Accordion type="single" collapsible className="space-y-3">

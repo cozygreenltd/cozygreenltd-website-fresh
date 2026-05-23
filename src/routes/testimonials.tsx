@@ -1,15 +1,7 @@
-import { createFileRoute } from "@tanstack/react-router";
 import { Star } from "lucide-react";
-
-export const Route = createFileRoute("/testimonials")({
-  head: () => ({
-    meta: [
-      { title: "Testimonials — Cozy Green Landscaping" },
-      { name: "description", content: "Hear from homeowners who love their outdoor spaces — and our team." },
-    ],
-  }),
-  component: Testimonials,
-});
+import { PageHero } from "@/components/page-hero";
+import { usePageMeta } from "@/lib/use-page-meta";
+import testimonialsHero from "@/assets/service-lighting.png";
 
 const REVIEWS = [
   { name: "Sarah M.", role: "Homeowner", rating: 5, text: "Cozy Green turned our patchy lawn into a backyard oasis. The crew was professional and the pricing was fair." },
@@ -20,20 +12,24 @@ const REVIEWS = [
   { name: "Jordan F.", role: "Small Business Owner", rating: 5, text: "Professional, friendly and creative. Our storefront has never looked better." },
 ];
 
-function Testimonials() {
+export function TestimonialsPage() {
+  usePageMeta({
+    title: "Testimonials — Cozy Green Landscaping",
+    description: "Hear from homeowners who love their outdoor spaces — and our team.",
+  });
+
   return (
     <>
-      <section className="bg-primary text-primary-foreground py-20">
-        <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
-          <h1 className="text-4xl sm:text-5xl font-bold">Loved by our neighbors</h1>
-          <p className="mt-5 text-lg opacity-90">5-star reviews from across the community.</p>
-        </div>
-      </section>
+      <PageHero
+        imageSrc={testimonialsHero}
+        title="Loved by our neighbors"
+        description="5-star reviews from across the community."
+      />
       <section className="py-20">
         <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 grid md:grid-cols-2 lg:grid-cols-3 gap-6">
           {REVIEWS.map((r) => (
             <div key={r.name} className="bg-card border border-border rounded-2xl p-6 flex flex-col">
-              <div className="flex gap-0.5 text-accent">
+              <div className="flex gap-0.5 text-primary">
                 {Array.from({ length: r.rating }).map((_, i) => (
                   <Star key={i} className="w-5 h-5 fill-current" />
                 ))}

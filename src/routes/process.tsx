@@ -1,16 +1,9 @@
-import { createFileRoute, Link } from "@tanstack/react-router";
 import { Button } from "@/components/ui/button";
 import { MessageSquare, PencilRuler, Hammer, Sparkles } from "lucide-react";
-
-export const Route = createFileRoute("/process")({
-  head: () => ({
-    meta: [
-      { title: "Our Process — Cozy Green Landscaping" },
-      { name: "description", content: "From consultation to final touch — our 4-step landscaping process." },
-    ],
-  }),
-  component: Process,
-});
+import { PageHero } from "@/components/page-hero";
+import { Link } from "@/lib/navigation";
+import { usePageMeta } from "@/lib/use-page-meta";
+import processHero from "@/assets/service-hardscape.png";
 
 const STEPS = [
   { icon: MessageSquare, title: "Consultation", text: "We visit your space, listen to your vision, and assess the site — at no cost." },
@@ -19,17 +12,19 @@ const STEPS = [
   { icon: Sparkles, title: "Final Touch", text: "We walk through every detail with you and set up easy ongoing care." },
 ];
 
-function Process() {
+export function ProcessPage() {
+  usePageMeta({
+    title: "Our Process — Cozy Green Landscaping",
+    description: "From consultation to final touch — our 4-step landscaping process.",
+  });
+
   return (
     <>
-      <section className="bg-primary text-primary-foreground py-20">
-        <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
-          <h1 className="text-4xl sm:text-5xl font-bold">How we work</h1>
-          <p className="mt-5 text-lg opacity-90 max-w-2xl mx-auto">
-            A simple, transparent 4-step process — designed to make your project stress-free.
-          </p>
-        </div>
-      </section>
+      <PageHero
+        imageSrc={processHero}
+        title="How we work"
+        description="A simple, transparent 4-step process — designed to make your project stress-free."
+      />
 
       <section className="py-20">
         <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 space-y-6">
