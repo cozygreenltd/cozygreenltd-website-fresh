@@ -1,0 +1,4 @@
+User-agent: *
+Allow: /
+
+Sitemap: https://cozygreen.com/sitemap.xml
