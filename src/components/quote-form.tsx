@@ -22,6 +22,7 @@ const schema = z.object({
   name: z.string().trim().min(2, "Please enter your name").max(80),
   email: z.string().trim().email("Invalid email").max(255),
   phone: z.string().trim().min(7, "Enter a valid phone").max(30),
+  address: z.string().trim().min(5, "Please enter the project address").max(180),
   service: z.string().min(1, "Select a service"),
   message: z.string().trim().max(1000).optional(),
 });
@@ -54,6 +55,7 @@ export function QuoteForm({
     name: "",
     email: "",
     phone: "",
+    address: "",
     service: defaultService ?? "",
     message: "",
   });
@@ -115,7 +117,14 @@ export function QuoteForm({
           ? `Thanks! We'll be in touch within 24 hours. (${attachments.length} image${attachments.length === 1 ? "" : "s"} attached)`
           : "Thanks! We'll be in touch within 24 hours.",
       );
-      setForm({ name: "", email: "", phone: "", service: defaultService ?? "", message: "" });
+      setForm({
+        name: "",
+        email: "",
+        phone: "",
+        address: "",
+        service: defaultService ?? "",
+        message: "",
+      });
       attachments.forEach((item) => URL.revokeObjectURL(item.url));
       setAttachments([]);
     }, 700);
@@ -161,6 +170,16 @@ export function QuoteForm({
             value={form.email}
             onChange={(e) => onChange("email", e.target.value)}
             maxLength={255}
+          />
+        </div>
+        <div className="sm:col-span-2">
+          <Label htmlFor="address">Project address</Label>
+          <Input
+            id="address"
+            value={form.address}
+            onChange={(e) => onChange("address", e.target.value)}
+            placeholder="Street address, city"
+            maxLength={180}
           />
         </div>
         <div className="sm:col-span-2">

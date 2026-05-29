@@ -1,6 +1,6 @@
 export const siteConfig = {
   name: "Cozy Green Landscaping",
-  url: "https://cozygreen.com",
+  url: "https://www.cozygreenltd.ca",
   locale: "en_CA",
   defaultTitle: "Cozy Green Landscaping",
   defaultDescription:

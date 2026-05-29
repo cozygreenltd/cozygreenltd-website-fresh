@@ -6,6 +6,7 @@ import { Button } from "@/components/ui/button";
 import { ChatWidget } from "@/components/chat-widget";
 import { Toaster } from "@/components/ui/sonner";
 import { Link, usePathname } from "@/lib/navigation";
+import { siteConfig } from "@/lib/seo";
 
 const NAV = [
   { to: "/", label: "Home" },
@@ -25,6 +26,8 @@ const FOOTER_NAV = [
   { to: "/faq", label: "FAQ" },
   { to: "/contact", label: "Contact" },
 ];
+
+const whatsappHref = `https://wa.me/${siteConfig.contactPhoneHref.replace("+", "")}`;
 
 export function SiteLayout({ children }: { children: ReactNode }) {
   // Header state tracks the menu drawer and whether the page has scrolled.
@@ -157,7 +160,7 @@ export function SiteLayout({ children }: { children: ReactNode }) {
       {/* Floating action buttons */}
       <div className="fixed bottom-6 right-6 z-40 flex flex-col gap-3">
         <a
-          href="https://wa.me/15551234567"
+          href={whatsappHref}
           target="_blank"
           rel="noopener noreferrer"
           aria-label="WhatsApp"
@@ -166,7 +169,7 @@ export function SiteLayout({ children }: { children: ReactNode }) {
           <MessageCircle className="w-6 h-6" />
         </a>
         <a
-          href="tel:+15551234567"
+          href={`tel:${siteConfig.contactPhoneHref}`}
           aria-label="Call Now"
           className="w-14 h-14 rounded-full bg-primary text-primary-foreground grid place-items-center shadow-lg hover:scale-105 transition-transform"
         >
@@ -213,10 +216,10 @@ function Footer() {
         <div>
           <h4 className="font-semibold mb-3">Contact</h4>
           <ul className="space-y-2 text-sm opacity-90">
-            <li>(555) 123-4567</li>
-            <li>hello@cozygreen.com</li>
+            <li>{siteConfig.contactPhone}</li>
+            <li>{siteConfig.contactEmail}</li>
             <li>Mon–Sat · 8am – 6pm</li>
-            <li>Serving the greater metro area</li>
+            <li>{siteConfig.serviceArea}</li>
           </ul>
         </div>
         <div>

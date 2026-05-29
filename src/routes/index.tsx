@@ -16,6 +16,7 @@ import { AnimatedImage } from "@/components/animated-image";
 import { QuoteForm } from "@/components/quote-form";
 import { Link } from "@/lib/navigation";
 import { usePageMeta } from "@/lib/use-page-meta";
+import { siteConfig } from "@/lib/seo";
 import hero from "@/assets/hero-landscape.jpg";
 import serviceCleanup from "@/assets/service-cleanup.png";
 import serviceGarden from "@/assets/service-garden.png";
@@ -142,7 +143,7 @@ export function HomePage() {
                 variant="outline"
                 className="text-base bg-white/10 text-white border-white/40 hover:bg-white hover:text-primary"
               >
-                <a href="tel:+15551234567">
+                <a href={`tel:${siteConfig.contactPhoneHref}`}>
                   <Phone className="w-4 h-4 mr-2" /> Call Us Today
                 </a>
               </Button>

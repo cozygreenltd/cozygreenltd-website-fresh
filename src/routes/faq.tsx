@@ -9,6 +9,7 @@ import { Button } from "@/components/ui/button";
 import { PageHero } from "@/components/page-hero";
 import { Link } from "@/lib/navigation";
 import { usePageMeta } from "@/lib/use-page-meta";
+import { siteConfig } from "@/lib/seo";
 import faqHero from "@/assets/service-cleanup.png";
 
 const FAQS = [
@@ -23,7 +24,7 @@ const FAQS = [
   },
   {
     q: "What areas do you serve?",
-    a: "We serve the greater metro area and surrounding suburbs within roughly 30 miles. Drop your address on our contact form and we'll confirm coverage.",
+    a: `We serve ${siteConfig.serviceArea}. Drop your address on our contact form and we'll confirm coverage.`,
   },
   {
     q: "Is the consultation really free?",

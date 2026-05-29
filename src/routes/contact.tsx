@@ -3,6 +3,7 @@ import { Mail, Phone, Clock, MapPin, Instagram, Facebook } from "lucide-react";
 import { QuoteForm } from "@/components/quote-form";
 import { PageHero } from "@/components/page-hero";
 import { usePageMeta } from "@/lib/use-page-meta";
+import { siteConfig } from "@/lib/seo";
 import contactHero from "@/assets/service-garden.png";
 
 function InfoItem({
@@ -64,14 +65,14 @@ export function ContactPage() {
             <InfoItem
               icon={Phone}
               title="Call us"
-              lines={["(555) 123-4567"]}
-              href="tel:+15551234567"
+              lines={[siteConfig.contactPhone]}
+              href={`tel:${siteConfig.contactPhoneHref}`}
             />
             <InfoItem
               icon={Mail}
               title="Email"
-              lines={["hello@cozygreen.com"]}
-              href="mailto:hello@cozygreen.com"
+              lines={[siteConfig.contactEmail]}
+              href={`mailto:${siteConfig.contactEmail}`}
             />
             <InfoItem
               icon={Clock}
@@ -81,7 +82,7 @@ export function ContactPage() {
             <InfoItem
               icon={MapPin}
               title="Service area"
-              lines={["Greater metro area + 30 miles"]}
+              lines={[siteConfig.serviceArea]}
             />
             <div className="flex gap-3 pt-2">
               <a

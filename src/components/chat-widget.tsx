@@ -4,6 +4,7 @@ import { MessageSquare, X, Send, Bot } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import { siteConfig } from "@/lib/seo";
 
 type Msg = { role: "user" | "bot"; content: string };
 
@@ -20,14 +21,14 @@ function botReply(q: string): string {
   if (t.includes("price") || t.includes("cost") || t.includes("quote"))
     return "Pricing depends on the size and scope of the project. Most lawn maintenance plans start at $79/visit. Request a free quote on our Contact page and we'll get back within 24 hours.";
   if (t.includes("area") || t.includes("location") || t.includes("serve"))
-    return "We proudly serve the greater metro area and surrounding suburbs within 30 miles. Drop your address on the Contact page and we'll confirm coverage.";
+    return `We proudly serve ${siteConfig.serviceArea}. Drop your address on the Contact page and we'll confirm coverage.`;
   if (t.includes("consult"))
     return "Yes! Every project starts with a free on-site consultation. Book one from the Contact page.";
   if (t.includes("service"))
     return "Our services include lawn maintenance, garden design, tree trimming, outdoor lighting, hardscaping, and yard cleanups. See the Services page for details.";
   if (t.includes("hour") || t.includes("open"))
     return "We're open Monday to Saturday, 8am – 6pm. Closed Sundays.";
-  return "Thanks for your message! A team member will follow up shortly. For a faster response, call us at (555) 123-4567 or request a free quote on the Contact page.";
+  return `Thanks for your message! A team member will follow up shortly. For a faster response, call us at ${siteConfig.contactPhone} or email ${siteConfig.contactEmail}.`;
 }
 
 export function ChatWidget() {
