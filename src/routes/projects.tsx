@@ -1,3 +1,4 @@
+// Portfolio page with simple category filtering for recent work.
 import { useState } from "react";
 import { PageHero } from "@/components/page-hero";
 import { AnimatedImage } from "@/components/animated-image";
@@ -13,6 +14,7 @@ import projectHero from "@/assets/hero-landscape.jpg";
 import projectHeroPng from "@/assets/hero-landscape.png";
 
 const PROJECTS = [
+  // Sample project tiles that populate the gallery grid.
   { cat: "Lawn", title: "Suburban Lawn Revival", img: projectLawn },
   { cat: "Garden", title: "Pollinator Garden Refresh", img: projectGarden },
   { cat: "Hardscape", title: "Flagstone Patio Build", img: projectHardscape },
@@ -27,6 +29,7 @@ const PROJECTS = [
 const CATS = ["All", "Lawn", "Garden", "Hardscape", "Lighting"];
 
 export function ProjectsPage() {
+  // The active filter is local state so the gallery can update instantly.
   usePageMeta({
     title: "Projects — Cozy Green Landscaping",
     description: "Before-and-after landscaping projects from our portfolio.",
@@ -50,7 +53,9 @@ export function ProjectsPage() {
                 key={c}
                 onClick={() => setActive(c)}
                 className={`px-4 py-2 rounded-full text-sm font-medium border transition-colors ${
-                  active === c ? "bg-primary text-primary-foreground border-primary" : "bg-card border-border hover:bg-muted"
+                  active === c
+                    ? "bg-primary text-primary-foreground border-primary"
+                    : "bg-card border-border hover:bg-muted"
                 }`}
               >
                 {c}
@@ -59,7 +64,10 @@ export function ProjectsPage() {
           </div>
           <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-6">
             {items.map((p) => (
-              <div key={p.title} className="group relative overflow-hidden rounded-2xl aspect-[4/3]">
+              <div
+                key={p.title}
+                className="group relative overflow-hidden rounded-2xl aspect-[4/3]"
+              >
                 <AnimatedImage
                   src={p.img}
                   alt={p.title}

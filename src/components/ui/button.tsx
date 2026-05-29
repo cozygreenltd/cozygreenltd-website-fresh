@@ -1,3 +1,4 @@
+// Button primitive used across the UI with a small set of style variants.
 import * as React from "react";
 import { Slot } from "@radix-ui/react-slot";
 import { cva, type VariantProps } from "class-variance-authority";

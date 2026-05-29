@@ -1,3 +1,4 @@
+// Returns a static HTML error page used when the app cannot boot normally.
 export function renderErrorPage(): string {
   return `<!doctype html>
 <html lang="en">

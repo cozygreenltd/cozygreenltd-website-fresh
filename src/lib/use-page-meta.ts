@@ -1,3 +1,4 @@
+// Keeps the document title and description in sync with the active page.
 import { useEffect } from "react";
 
 type MetaOptions = {

@@ -1,3 +1,4 @@
+// Quote request form with validation, image uploads, and a simulated submit flow.
 import { useEffect, useRef, useState } from "react";
 import { z } from "zod";
 import { toast } from "sonner";
@@ -5,12 +6,19 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 import { ImagePlus, Upload, X } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { AnimatedImage } from "@/components/animated-image";
 
 const schema = z.object({
+  // Basic contact details are validated before the form is accepted.
   name: z.string().trim().min(2, "Please enter your name").max(80),
   email: z.string().trim().email("Invalid email").max(255),
   phone: z.string().trim().min(7, "Enter a valid phone").max(30),
@@ -41,6 +49,7 @@ export function QuoteForm({
   variant?: "card" | "plain";
   defaultService?: string;
 }) {
+  // Form state is kept local because submissions are only simulated in this static build.
   const [form, setForm] = useState({
     name: "",
     email: "",
@@ -56,6 +65,7 @@ export function QuoteForm({
   const onChange = (k: string, v: string) => setForm((f) => ({ ...f, [k]: v }));
 
   const addFiles = (files: FileList | File[]) => {
+    // Only image files are accepted, and duplicate selections are ignored by ID.
     const incoming = Array.from(files).filter((file) => file.type.startsWith("image/"));
     if (!incoming.length) return;
 
@@ -74,6 +84,7 @@ export function QuoteForm({
   };
 
   const removeAttachment = (id: string) => {
+    // Revoke the preview URL immediately so dropped images do not leak memory.
     setAttachments((current) => {
       const target = current.find((item) => item.id === id);
       if (target) URL.revokeObjectURL(target.url);
@@ -82,12 +93,14 @@ export function QuoteForm({
   };
 
   useEffect(() => {
+    // Clean up any active object URLs when the component unmounts or attachments change.
     return () => {
       attachments.forEach((item) => URL.revokeObjectURL(item.url));
     };
   }, [attachments]);
 
   const submit = (e: React.FormEvent) => {
+    // Validate locally, then simulate a short network delay before showing success feedback.
     e.preventDefault();
     const r = schema.safeParse(form);
     if (!r.success) {
@@ -124,15 +137,31 @@ export function QuoteForm({
       <div className="grid sm:grid-cols-2 gap-4">
         <div>
           <Label htmlFor="name">Name</Label>
-          <Input id="name" value={form.name} onChange={(e) => onChange("name", e.target.value)} maxLength={80} />
+          <Input
+            id="name"
+            value={form.name}
+            onChange={(e) => onChange("name", e.target.value)}
+            maxLength={80}
+          />
         </div>
         <div>
           <Label htmlFor="phone">Phone</Label>
-          <Input id="phone" value={form.phone} onChange={(e) => onChange("phone", e.target.value)} maxLength={30} />
+          <Input
+            id="phone"
+            value={form.phone}
+            onChange={(e) => onChange("phone", e.target.value)}
+            maxLength={30}
+          />
         </div>
         <div className="sm:col-span-2">
           <Label htmlFor="email">Email</Label>
-          <Input id="email" type="email" value={form.email} onChange={(e) => onChange("email", e.target.value)} maxLength={255} />
+          <Input
+            id="email"
+            type="email"
+            value={form.email}
+            onChange={(e) => onChange("email", e.target.value)}
+            maxLength={255}
+          />
         </div>
         <div className="sm:col-span-2">
           <Label htmlFor="service">Service</Label>
@@ -142,7 +171,9 @@ export function QuoteForm({
             </SelectTrigger>
             <SelectContent>
               {SERVICES.map((s) => (
-                <SelectItem key={s} value={s}>{s}</SelectItem>
+                <SelectItem key={s} value={s}>
+                  {s}
+                </SelectItem>
               ))}
             </SelectContent>
           </Select>
@@ -219,7 +250,10 @@ export function QuoteForm({
           {attachments.length > 0 && (
             <div className="mt-4 grid grid-cols-2 gap-3 sm:grid-cols-3">
               {attachments.map((item) => (
-                <div key={item.id} className="group relative overflow-hidden rounded-xl border border-border bg-card">
+                <div
+                  key={item.id}
+                  className="group relative overflow-hidden rounded-xl border border-border bg-card"
+                >
                   <AnimatedImage
                     src={item.url}
                     alt={item.file.name}

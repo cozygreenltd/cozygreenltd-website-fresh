@@ -5,6 +5,7 @@ let lastCapturedError: { error: unknown; at: number } | undefined;
 const TTL_MS = 5_000;
 
 function record(error: unknown) {
+  // Keep only the most recent error because the recovery path reads one value at a time.
   lastCapturedError = { error, at: Date.now() };
 }
 

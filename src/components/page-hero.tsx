@@ -1,3 +1,4 @@
+// Shared hero banner used across content pages to keep heading layouts consistent.
 import { AnimatedImage } from "@/components/animated-image";
 
 type PageHeroProps = {

@@ -1,3 +1,4 @@
+// Shared shell that provides the header, footer, floating actions, and page transitions.
 import { ReactNode, useEffect, useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { Menu, X, Phone, MessageCircle } from "lucide-react";
@@ -26,6 +27,7 @@ const FOOTER_NAV = [
 ];
 
 export function SiteLayout({ children }: { children: ReactNode }) {
+  // Header state tracks the menu drawer and whether the page has scrolled.
   const [open, setOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
   const pathname = usePathname();
@@ -33,6 +35,7 @@ export function SiteLayout({ children }: { children: ReactNode }) {
   const glassyHeader = !isHome || scrolled;
 
   useEffect(() => {
+    // Update the header styling as soon as the page crosses a small scroll threshold.
     const onScroll = () => setScrolled(window.scrollY > 20);
     onScroll();
     window.addEventListener("scroll", onScroll);
@@ -40,6 +43,7 @@ export function SiteLayout({ children }: { children: ReactNode }) {
   }, []);
 
   useEffect(() => {
+    // Close the mobile menu and jump back to the top on every route change.
     setOpen(false);
     window.scrollTo(0, 0);
   }, [pathname]);
@@ -177,6 +181,7 @@ export function SiteLayout({ children }: { children: ReactNode }) {
 }
 
 function Footer() {
+  // Footer links and contact details are centralized here so every page stays consistent.
   return (
     <footer className="bg-primary text-primary-foreground mt-16">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12 grid md:grid-cols-4 gap-8">
@@ -217,9 +222,21 @@ function Footer() {
         <div>
           <h4 className="font-semibold mb-3">Follow</h4>
           <ul className="space-y-2 text-sm opacity-90">
-            <li><a href="#" className="hover:underline">Instagram</a></li>
-            <li><a href="#" className="hover:underline">Facebook</a></li>
-            <li><a href="#" className="hover:underline">Pinterest</a></li>
+            <li>
+              <a href="#" className="hover:underline">
+                Instagram
+              </a>
+            </li>
+            <li>
+              <a href="#" className="hover:underline">
+                Facebook
+              </a>
+            </li>
+            <li>
+              <a href="#" className="hover:underline">
+                Pinterest
+              </a>
+            </li>
           </ul>
         </div>
       </div>

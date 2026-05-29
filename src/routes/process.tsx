@@ -1,3 +1,4 @@
+// Step-by-step overview of how a project moves from consultation to completion.
 import { Button } from "@/components/ui/button";
 import { MessageSquare, PencilRuler, Hammer, Sparkles } from "lucide-react";
 import { PageHero } from "@/components/page-hero";
@@ -6,13 +7,31 @@ import { usePageMeta } from "@/lib/use-page-meta";
 import processHero from "@/assets/service-hardscape.png";
 
 const STEPS = [
-  { icon: MessageSquare, title: "Consultation", text: "We visit your space, listen to your vision, and assess the site — at no cost." },
-  { icon: PencilRuler, title: "Planning", text: "We craft a tailored plan with mood boards, layout drawings and a transparent quote." },
-  { icon: Hammer, title: "Execution", text: "Our experienced crews build with care, clean as they go and respect your home." },
-  { icon: Sparkles, title: "Final Touch", text: "We walk through every detail with you and set up easy ongoing care." },
+  // The process is kept to four simple stages to make expectations easy to follow.
+  {
+    icon: MessageSquare,
+    title: "Consultation",
+    text: "We visit your space, listen to your vision, and assess the site — at no cost.",
+  },
+  {
+    icon: PencilRuler,
+    title: "Planning",
+    text: "We craft a tailored plan with mood boards, layout drawings and a transparent quote.",
+  },
+  {
+    icon: Hammer,
+    title: "Execution",
+    text: "Our experienced crews build with care, clean as they go and respect your home.",
+  },
+  {
+    icon: Sparkles,
+    title: "Final Touch",
+    text: "We walk through every detail with you and set up easy ongoing care.",
+  },
 ];
 
 export function ProcessPage() {
+  // This page explains the workflow before the user reaches the quote form.
   usePageMeta({
     title: "Our Process — Cozy Green Landscaping",
     description: "From consultation to final touch — our 4-step landscaping process.",
@@ -29,12 +48,17 @@ export function ProcessPage() {
       <section className="py-20">
         <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 space-y-6">
           {STEPS.map((s, i) => (
-            <div key={s.title} className="flex flex-col sm:flex-row gap-6 items-start bg-card border border-border rounded-2xl p-6">
+            <div
+              key={s.title}
+              className="flex flex-col sm:flex-row gap-6 items-start bg-card border border-border rounded-2xl p-6"
+            >
               <div className="shrink-0 w-14 h-14 rounded-full bg-primary text-primary-foreground grid place-items-center">
                 <s.icon className="w-6 h-6" />
               </div>
               <div className="flex-1">
-                <div className="text-xs uppercase tracking-widest text-primary font-semibold">Step {i + 1}</div>
+                <div className="text-xs uppercase tracking-widest text-primary font-semibold">
+                  Step {i + 1}
+                </div>
                 <h3 className="text-2xl font-bold mt-1">{s.title}</h3>
                 <p className="mt-2 text-muted-foreground">{s.text}</p>
               </div>
@@ -42,7 +66,9 @@ export function ProcessPage() {
           ))}
         </div>
         <div className="text-center mt-12">
-          <Button asChild size="lg"><Link to="/contact">Start with a Free Consultation</Link></Button>
+          <Button asChild size="lg">
+            <Link to="/contact">Start with a Free Consultation</Link>
+          </Button>
         </div>
       </section>
     </>

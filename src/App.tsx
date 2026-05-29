@@ -1,3 +1,4 @@
+// Chooses the page component for the current pathname and wraps it in the shared layout.
 import { SiteLayout } from "@/components/site-layout";
 import { useCurrentPath } from "@/lib/navigation";
 import { AboutPage } from "@/routes/about";
@@ -10,6 +11,7 @@ import { ServicesPage } from "@/routes/services";
 import { TestimonialsPage } from "@/routes/testimonials";
 
 function NotFoundPage() {
+  // Fallback screen for any route that is not mapped above.
   return (
     <div className="flex min-h-screen items-center justify-center bg-background px-4">
       <div className="max-w-md text-center">
@@ -24,6 +26,7 @@ function NotFoundPage() {
 }
 
 export function App() {
+  // Resolve the current route once so the app can swap page content without a router library.
   const pathname = useCurrentPath();
 
   let content = <NotFoundPage />;

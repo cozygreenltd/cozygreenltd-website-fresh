@@ -1,3 +1,4 @@
+// Service catalog page with individual offerings and quote prompts.
 import { Button } from "@/components/ui/button";
 import { PageHero } from "@/components/page-hero";
 import { AnimatedImage } from "@/components/animated-image";
@@ -13,17 +14,26 @@ import serviceCleanup from "@/assets/service-cleanup.png";
 import projectBeforeAfter from "@/assets/project-before-after.png";
 
 const SERVICES = [
+  // Each service card pairs an image with short summary copy and bullet highlights.
   {
     name: "Garden Clean Ups",
     img: serviceCleanup,
     desc: "Seasonal cleanup work that keeps your yard tidy, fresh and ready for the next season.",
-    bullets: ["Leaf and debris removal", "Bed edging and mulch refreshes", "Final haul-off and detailing"],
+    bullets: [
+      "Leaf and debris removal",
+      "Bed edging and mulch refreshes",
+      "Final haul-off and detailing",
+    ],
   },
   {
     name: "Garden Bed Maintenance",
     img: serviceGarden,
     desc: "Ongoing upkeep that keeps planting beds healthy, neat and consistently beautiful.",
-    bullets: ["Weeding and Bed Maintenance ", "Pruning and Trimming", "Seasonal Planting and Enhancement"],
+    bullets: [
+      "Weeding and Bed Maintenance ",
+      "Pruning and Trimming",
+      "Seasonal Planting and Enhancement",
+    ],
   },
   {
     name: "Garden Renovations",
@@ -35,7 +45,11 @@ const SERVICES = [
     name: "Landscape Design & Construction",
     img: servicesHero,
     desc: "Custom landscape planning and installation from concept to finished outdoor space.",
-    bullets: ["Hardscape installation", "Softscape planning", "Project management from start to finish"],
+    bullets: [
+      "Hardscape installation",
+      "Softscape planning",
+      "Project management from start to finish",
+    ],
   },
   {
     name: "Landscape Carpentry",
@@ -58,6 +72,7 @@ const SERVICES = [
 ];
 
 export function ServicesPage() {
+  // This page highlights the service menu so users can jump straight to a quote request.
   usePageMeta({
     title: "Services — Cozy Green Landscaping",
     description:
@@ -75,7 +90,10 @@ export function ServicesPage() {
       <section className="py-20">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 grid md:grid-cols-2 lg:grid-cols-3 gap-8">
           {SERVICES.map((s) => (
-            <article key={s.name} className="group flex flex-col overflow-hidden rounded-2xl border border-border bg-card">
+            <article
+              key={s.name}
+              className="group flex flex-col overflow-hidden rounded-2xl border border-border bg-card"
+            >
               <div className="overflow-hidden">
                 <AnimatedImage
                   src={s.img}

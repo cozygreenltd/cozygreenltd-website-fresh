@@ -1,18 +1,51 @@
+// Social proof page that showcases short client quotes and five-star ratings.
 import { Star } from "lucide-react";
 import { PageHero } from "@/components/page-hero";
 import { usePageMeta } from "@/lib/use-page-meta";
 import testimonialsHero from "@/assets/service-lighting.png";
 
 const REVIEWS = [
-  { name: "Sarah M.", role: "Homeowner", rating: 5, text: "Cozy Green turned our patchy lawn into a backyard oasis. The crew was professional and the pricing was fair." },
-  { name: "David L.", role: "Property Manager", rating: 5, text: "Reliable, on time, and the quality is unmatched. They handle three of our properties and never disappoint." },
-  { name: "Maya R.", role: "Homeowner", rating: 5, text: "From design to installation, every step was clearly communicated. We love our new garden!" },
-  { name: "Chris P.", role: "Homeowner", rating: 5, text: "The hardscape patio is gorgeous and built to last. Worth every penny." },
-  { name: "Aiko T.", role: "Homeowner", rating: 5, text: "Outdoor lighting transformed our evenings. Absolutely magical." },
-  { name: "Jordan F.", role: "Small Business Owner", rating: 5, text: "Professional, friendly and creative. Our storefront has never looked better." },
+  // A compact set of testimonials to keep the page scannable.
+  {
+    name: "Sarah M.",
+    role: "Homeowner",
+    rating: 5,
+    text: "Cozy Green turned our patchy lawn into a backyard oasis. The crew was professional and the pricing was fair.",
+  },
+  {
+    name: "David L.",
+    role: "Property Manager",
+    rating: 5,
+    text: "Reliable, on time, and the quality is unmatched. They handle three of our properties and never disappoint.",
+  },
+  {
+    name: "Maya R.",
+    role: "Homeowner",
+    rating: 5,
+    text: "From design to installation, every step was clearly communicated. We love our new garden!",
+  },
+  {
+    name: "Chris P.",
+    role: "Homeowner",
+    rating: 5,
+    text: "The hardscape patio is gorgeous and built to last. Worth every penny.",
+  },
+  {
+    name: "Aiko T.",
+    role: "Homeowner",
+    rating: 5,
+    text: "Outdoor lighting transformed our evenings. Absolutely magical.",
+  },
+  {
+    name: "Jordan F.",
+    role: "Small Business Owner",
+    rating: 5,
+    text: "Professional, friendly and creative. Our storefront has never looked better.",
+  },
 ];
 
 export function TestimonialsPage() {
+  // Present review snippets without requiring any external data source.
   usePageMeta({
     title: "Testimonials — Cozy Green Landscaping",
     description: "Hear from homeowners who love their outdoor spaces — and our team.",
@@ -28,7 +61,10 @@ export function TestimonialsPage() {
       <section className="py-20">
         <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 grid md:grid-cols-2 lg:grid-cols-3 gap-6">
           {REVIEWS.map((r) => (
-            <div key={r.name} className="bg-card border border-border rounded-2xl p-6 flex flex-col">
+            <div
+              key={r.name}
+              className="bg-card border border-border rounded-2xl p-6 flex flex-col"
+            >
               <div className="flex gap-0.5 text-primary">
                 {Array.from({ length: r.rating }).map((_, i) => (
                   <Star key={i} className="w-5 h-5 fill-current" />

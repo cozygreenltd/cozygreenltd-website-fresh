@@ -1,3 +1,4 @@
+// ESLint setup for TypeScript, React hooks, refresh, and Prettier integration.
 import js from "@eslint/js";
 import eslintPluginPrettier from "eslint-plugin-prettier/recommended";
 import globals from "globals";

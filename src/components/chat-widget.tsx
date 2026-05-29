@@ -1,3 +1,4 @@
+// Lightweight FAQ-style chat widget with canned responses for common questions.
 import { useState, useRef, useEffect } from "react";
 import { MessageSquare, X, Send, Bot } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
@@ -14,6 +15,7 @@ const SUGGESTIONS = [
 ];
 
 function botReply(q: string): string {
+  // Route the message to a matching canned response based on keywords.
   const t = q.toLowerCase();
   if (t.includes("price") || t.includes("cost") || t.includes("quote"))
     return "Pricing depends on the size and scope of the project. Most lawn maintenance plans start at $79/visit. Request a free quote on our Contact page and we'll get back within 24 hours.";
@@ -29,9 +31,13 @@ function botReply(q: string): string {
 }
 
 export function ChatWidget() {
+  // The widget stays local-state only so it can feel interactive without backend wiring.
   const [open, setOpen] = useState(false);
   const [messages, setMessages] = useState<Msg[]>([
-    { role: "bot", content: "Hi! 🌿 I'm the Cozy Green assistant. Ask me anything about our services." },
+    {
+      role: "bot",
+      content: "Hi! 🌿 I'm the Cozy Green assistant. Ask me anything about our services.",
+    },
   ]);
   const [input, setInput] = useState("");
   const endRef = useRef<HTMLDivElement>(null);

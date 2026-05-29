@@ -1,3 +1,4 @@
+// Home page with hero, featured services, trust signals, and project highlights.
 import { motion } from "framer-motion";
 import {
   Phone,
@@ -23,12 +24,14 @@ import serviceLawn from "@/assets/service-lawn.png";
 import serviceTree from "@/assets/service-tree.png";
 
 const BADGES = [
+  // Quick trust markers shown in the hero section.
   { icon: CheckCircle2, label: "Free Consultation" },
   { icon: Clock, label: "Fast Response" },
   { icon: Users, label: "Professional Team" },
 ];
 
 const WHY_CHOOSE = [
+  // Short value statements that reinforce the brand promise.
   {
     icon: Award,
     title: "Proven Experience",
@@ -47,6 +50,7 @@ const WHY_CHOOSE = [
 ];
 
 const PROJECT_SAMPLES = [
+  // Featured projects used to preview the portfolio without loading the full gallery.
   {
     title: "Outdoor Space Renewal",
     category: "Lawn",
@@ -65,6 +69,7 @@ const PROJECT_SAMPLES = [
 ];
 
 const SERVICES = [
+  // Landing-page service cards that lead visitors toward the quote form.
   {
     name: "Garden Clean Ups",
     text: "Seasonal leaf removal, bed cleanups, mulch refreshes and pruning.",
@@ -88,6 +93,7 @@ const SERVICES = [
 ];
 
 export function HomePage() {
+  // The home page sets the SEO metadata for the landing experience.
   usePageMeta({
     title: "Cozy Green Landscaping — Free Quote in 24 Hours",
     description:
@@ -123,15 +129,22 @@ export function HomePage() {
               We dont just maintain yards we transform them
             </h1>
             <p className="mt-5 text-lg text-white/85 max-w-xl">
-              Cozy Green Landscaping designs, builds and maintains stunning outdoor
-              spaces — so you can relax and enjoy them.
+              Cozy Green Landscaping designs, builds and maintains stunning outdoor spaces — so you
+              can relax and enjoy them.
             </p>
             <div className="mt-7 flex flex-wrap gap-3">
               <Button asChild size="lg" className="text-base">
                 <Link to="/contact">Get a Free Quote</Link>
               </Button>
-              <Button asChild size="lg" variant="outline" className="text-base bg-white/10 text-white border-white/40 hover:bg-white hover:text-primary">
-                <a href="tel:+15551234567"><Phone className="w-4 h-4 mr-2" /> Call Us Today</a>
+              <Button
+                asChild
+                size="lg"
+                variant="outline"
+                className="text-base bg-white/10 text-white border-white/40 hover:bg-white hover:text-primary"
+              >
+                <a href="tel:+15551234567">
+                  <Phone className="w-4 h-4 mr-2" /> Call Us Today
+                </a>
               </Button>
             </div>
             <div className="mt-8 flex flex-wrap gap-4">
@@ -156,14 +169,18 @@ export function HomePage() {
       {/* INTRO */}
       <section className="py-20 bg-background">
         <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
-          <span className="text-sm uppercase tracking-widest text-primary font-semibold">About Us</span>
-          <h2 className="mt-3 text-3xl sm:text-4xl font-bold">A team that cares for every blade of grass</h2>
+          <span className="text-sm uppercase tracking-widest text-primary font-semibold">
+            About Us
+          </span>
+          <h2 className="mt-3 text-3xl sm:text-4xl font-bold">
+            A team that cares for every blade of grass
+          </h2>
           <p className="mt-5 text-lg text-muted-foreground">
-            For over a decade, Cozy Green Landscaping has helped homeowners and businesses
-            create outdoor spaces they love. From weekly lawn care to full-yard transformations,
-            we bring craftsmanship, reliability and a friendly local touch to every project.
+            For over a decade, Cozy Green Landscaping has helped homeowners and businesses create
+            outdoor spaces they love. From weekly lawn care to full-yard transformations, we bring
+            craftsmanship, reliability and a friendly local touch to every project.
           </p>
-            <div className="mt-10 grid sm:grid-cols-3 gap-6">
+          <div className="mt-10 grid sm:grid-cols-3 gap-6">
             {[
               { icon: Award, title: "10+ Years", text: "Experience serving local homes" },
               { icon: Shield, title: "100% Insured", text: "Fully licensed & insured crews" },
@@ -266,7 +283,10 @@ export function HomePage() {
           </div>
           <div className="mt-10 grid md:grid-cols-2 lg:grid-cols-4 gap-6">
             {SERVICES.map((service) => (
-              <div key={service.name} className="overflow-hidden rounded-2xl border border-border bg-card">
+              <div
+                key={service.name}
+                className="overflow-hidden rounded-2xl border border-border bg-card"
+              >
                 <AnimatedImage
                   src={service.img}
                   alt={service.name}
@@ -318,7 +338,8 @@ export function HomePage() {
                 </div>
                 <h3 className="mt-4 text-2xl font-bold">Cozy Green Landscaping</h3>
                 <p className="mt-3 text-muted-foreground">
-                  Open Monday to Saturday, 8am to 6pm. Serving distinguished properties throughout Calgary and surrounding areas.
+                  Open Monday to Saturday, 8am to 6pm. Serving distinguished properties throughout
+                  Calgary and surrounding areas.
                 </p>
               </div>
               <div className="mt-6">

@@ -1,3 +1,4 @@
+// Animated image wrapper that adds subtle motion while respecting reduced-motion preferences.
 import { type ImgHTMLAttributes } from "react";
 import { motion, useReducedMotion } from "framer-motion";
 
@@ -11,6 +12,7 @@ export function AnimatedImage({
   style,
   ...props
 }: AnimatedImageProps) {
+  // Framer Motion handles the gentle zoom effect and hover scale for hero imagery.
   const prefersReducedMotion = useReducedMotion();
 
   return (

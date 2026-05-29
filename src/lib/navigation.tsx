@@ -1,3 +1,4 @@
+// Lightweight client-side navigation utilities for the custom route system.
 import {
   createContext,
   useContext,
@@ -16,11 +17,10 @@ type LocationSnapshot = {
 
 const LocationContext = createContext<LocationSnapshot | null>(null);
 let cachedLocationSnapshot: LocationSnapshot =
-  typeof window === "undefined"
-    ? { pathname: "/", search: "", hash: "" }
-    : readLocation();
+  typeof window === "undefined" ? { pathname: "/", search: "", hash: "" } : readLocation();
 
 function readLocation(): LocationSnapshot {
+  // Read the browser location in a single place so snapshots stay consistent.
   if (typeof window === "undefined") {
     return { pathname: "/", search: "", hash: "" };
   }
@@ -33,6 +33,7 @@ function readLocation(): LocationSnapshot {
 }
 
 function subscribe(callback: () => void) {
+  // Only popstate needs to be observed because navigation is handled with history.pushState.
   const onPopState = () => {
     cachedLocationSnapshot = readLocation();
     callback();
@@ -47,6 +48,7 @@ function getSnapshot() {
 }
 
 export function NavigationProvider({ children }: PropsWithChildren) {
+  // useSyncExternalStore keeps the current location stable across React renders.
   const location = useSyncExternalStore(subscribe, getSnapshot, () => ({
     pathname: "/",
     search: "",
@@ -83,6 +85,7 @@ export function Link({
   ...props
 }: PropsWithChildren<{ to?: string }> &
   Omit<AnchorHTMLAttributes<HTMLAnchorElement>, "href" | "children">) {
+  // Preserve normal anchor behavior for external links while intercepting internal navigation.
   const resolvedHref = href ?? to ?? "#";
 
   return (
