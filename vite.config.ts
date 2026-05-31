@@ -4,7 +4,7 @@ import { defineConfig, loadEnv } from "vite";
 import react from "@vitejs/plugin-react";
 import tailwindcss from "@tailwindcss/vite";
 import tsconfigPaths from "vite-tsconfig-paths";
-import { handleSendEmail } from "./api/send-email";
+import { routeSendEmail } from "./api/send-email";
 
 function toHeadersInit(headers: Record<string, string | string[] | undefined>) {
   const entries: Array<[string, string]> = [];
@@ -34,20 +34,27 @@ export default defineConfig(({ mode }) => {
         name: "local-api-send-email",
         configureServer(server) {
           server.middlewares.use(async (req, res, next) => {
-            if (req.method !== "POST" || req.url !== "/api/send-email") {
+            const url = new URL(req.url ?? "/", `http://${req.headers.host ?? "localhost"}`);
+
+            if (url.pathname !== "/api/send-email") {
               next();
               return;
             }
 
             try {
-              const request = new Request(`http://${req.headers.host ?? "localhost"}${req.url}`, {
+              const init: RequestInit & { duplex?: "half" } = {
                 method: req.method,
                 headers: toHeadersInit(req.headers),
-                body: Readable.toWeb(req) as ReadableStream,
-                duplex: "half",
-              });
+              };
 
-              const response = await handleSendEmail(request);
+              if (req.method !== "GET" && req.method !== "HEAD") {
+                init.body = Readable.toWeb(req) as ReadableStream;
+                init.duplex = "half";
+              }
+
+              const request = new Request(url, init);
+
+              const response = await routeSendEmail(request);
               res.statusCode = response.status;
               response.headers.forEach((value, key) => {
                 res.setHeader(key, value);

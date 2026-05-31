@@ -1,6 +1,7 @@
+import type { IncomingHttpHeaders, IncomingMessage, ServerResponse } from "node:http";
+import { Readable } from "node:stream";
 import nodemailer from "nodemailer";
-import { quoteRequestSchema } from "../src/lib/quote-request";
-import { siteConfig } from "../src/lib/seo";
+import { z } from "zod";
 
 const MAX_ATTACHMENTS = 5;
 const MAX_ATTACHMENT_BYTES = 5 * 1024 * 1024;
@@ -16,6 +17,28 @@ const THEME = {
   text: "#214031",
   muted: "#5e7668",
   soft: "#edf5ef",
+};
+
+const siteConfig = {
+  name: "Cozy Green Landscaping",
+  contactEmail: "info@cozygreenltd.ca",
+  contactPhone: "+1 (825) 305-1192",
+  serviceArea: "Calgary and surrounding communities",
+} as const;
+
+const quoteRequestSchema = z.object({
+  name: z.string().trim().min(2, "Please enter your name").max(80),
+  email: z.string().trim().email("Invalid email").max(255),
+  phone: z.string().trim().min(7, "Enter a valid phone").max(30),
+  address: z.string().trim().min(5, "Please enter the project address").max(180),
+  service: z.string().trim().min(1, "Select a service").max(120),
+  message: z.string().trim().max(1000).optional(),
+});
+
+export const config = {
+  api: {
+    bodyParser: false,
+  },
 };
 
 let transporter: ReturnType<typeof nodemailer.createTransport> | null = null;
@@ -326,6 +349,13 @@ function jsonError(message: string, status = 400) {
   return Response.json({ ok: false, error: message }, { status });
 }
 
+function methodNotAllowedResponse() {
+  return new Response("Method Not Allowed", {
+    status: 405,
+    headers: { Allow: "POST" },
+  });
+}
+
 function sanitizeFilename(name: string) {
   return name.replace(/[^a-zA-Z0-9._ -]/g, "_").slice(0, 120) || "attachment";
 }
@@ -333,6 +363,20 @@ function sanitizeFilename(name: string) {
 function getStringField(formData: FormData, key: string) {
   const value = formData.get(key);
   return typeof value === "string" ? value : "";
+}
+
+function isUploadedFile(value: FormDataEntryValue): value is File {
+  if (typeof value === "string") {
+    return false;
+  }
+
+  const fileLike = value as Partial<File>;
+  return (
+    typeof fileLike.name === "string" &&
+    typeof fileLike.type === "string" &&
+    typeof fileLike.size === "number" &&
+    typeof fileLike.arrayBuffer === "function"
+  );
 }
 
 function logError(context: string, error: unknown) {
@@ -392,7 +436,7 @@ export async function handleSendEmail(request: Request) {
     let totalAttachmentBytes = 0;
 
     for (const value of fileValues) {
-      if (!(value instanceof File)) {
+      if (!isUploadedFile(value)) {
         continue;
       }
 
@@ -461,20 +505,100 @@ export async function handleSendEmail(request: Request) {
   }
 }
 
-export default {
-  async fetch(request: Request) {
-    console.log("send-email fetch", {
-      method: request.method,
-      url: request.url,
-    });
+export async function routeSendEmail(request: Request) {
+  console.log("send-email fetch", {
+    method: request.method,
+    url: request.url,
+  });
 
-    if (request.method !== "POST") {
-      return new Response("Method Not Allowed", {
-        status: 405,
-        headers: { Allow: "POST" },
-      });
+  if (request.method !== "POST") {
+    return methodNotAllowedResponse();
+  }
+
+  return handleSendEmail(request);
+}
+
+export function GET() {
+  return methodNotAllowedResponse();
+}
+
+export function HEAD() {
+  return methodNotAllowedResponse();
+}
+
+export async function POST(request: Request) {
+  return handleSendEmail(request);
+}
+
+function isWebRequest(value: unknown): value is Request {
+  return (
+    typeof value === "object" && value !== null && typeof (value as Request).formData === "function"
+  );
+}
+
+function getFirstHeader(value: string | string[] | undefined) {
+  return Array.isArray(value) ? value[0] : value;
+}
+
+function toHeadersInit(headers: IncomingHttpHeaders) {
+  const entries: Array<[string, string]> = [];
+
+  for (const [key, value] of Object.entries(headers)) {
+    if (Array.isArray(value)) {
+      for (const item of value) {
+        entries.push([key, item]);
+      }
+      continue;
     }
 
-    return handleSendEmail(request);
-  },
-};
+    if (value != null) {
+      entries.push([key, value]);
+    }
+  }
+
+  return entries;
+}
+
+function createRequestFromNode(request: IncomingMessage) {
+  const protocol = getFirstHeader(request.headers["x-forwarded-proto"]) ?? "https";
+  const host = getFirstHeader(request.headers.host) ?? "localhost";
+  const url = new URL(request.url ?? "/", `${protocol}://${host}`);
+  const method = request.method ?? "GET";
+  const init: RequestInit & { duplex?: "half" } = {
+    method,
+    headers: toHeadersInit(request.headers),
+  };
+
+  if (method !== "GET" && method !== "HEAD") {
+    init.body = Readable.toWeb(request) as ReadableStream;
+    init.duplex = "half";
+  }
+
+  return new Request(url, init);
+}
+
+async function sendNodeResponse(response: ServerResponse, webResponse: Response) {
+  response.statusCode = webResponse.status;
+
+  webResponse.headers.forEach((value, key) => {
+    response.setHeader(key, value);
+  });
+
+  response.end(Buffer.from(await webResponse.arrayBuffer()));
+}
+
+export default async function handler(
+  request: Request | IncomingMessage,
+  response?: ServerResponse,
+) {
+  if (isWebRequest(request)) {
+    return routeSendEmail(request);
+  }
+
+  if (!response) {
+    return jsonError("Unsupported server invocation.", 500);
+  }
+
+  const webResponse = await routeSendEmail(createRequestFromNode(request));
+  await sendNodeResponse(response, webResponse);
+}
