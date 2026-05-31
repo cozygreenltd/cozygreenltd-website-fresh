@@ -359,6 +359,11 @@ function logError(context: string, error: unknown) {
 }
 
 export async function handleSendEmail(request: Request) {
+  console.log("send-email invoked", {
+    method: request.method,
+    url: request.url,
+  });
+
   try {
     const formData = await request.formData();
     const parsed = quoteRequestSchema.safeParse({
@@ -455,6 +460,19 @@ export async function handleSendEmail(request: Request) {
     return jsonError("Email service is not configured or unavailable.", 500);
   }
 }
+
+export default {
+  fetch(request: Request) {
+    if (request.method !== "POST") {
+      return new Response("Method Not Allowed", {
+        status: 405,
+        headers: { Allow: "POST" },
+      });
+    }
+
+    return handleSendEmail(request);
+  },
+};
 
 export async function POST(request: Request) {
   return handleSendEmail(request);
