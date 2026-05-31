@@ -461,17 +461,20 @@ export async function handleSendEmail(request: Request) {
   }
 }
 
-export const config = {
-  runtime: "nodejs",
+export default {
+  async fetch(request: Request) {
+    console.log("send-email fetch", {
+      method: request.method,
+      url: request.url,
+    });
+
+    if (request.method !== "POST") {
+      return new Response("Method Not Allowed", {
+        status: 405,
+        headers: { Allow: "POST" },
+      });
+    }
+
+    return handleSendEmail(request);
+  },
 };
-
-export async function GET() {
-  return Response.json({
-    ok: true,
-    message: "send-email endpoint is alive. Use POST to submit the form.",
-  });
-}
-
-export async function POST(request: Request) {
-  return handleSendEmail(request);
-}
