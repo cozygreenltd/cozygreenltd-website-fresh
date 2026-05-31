@@ -335,6 +335,29 @@ function getStringField(formData: FormData, key: string) {
   return typeof value === "string" ? value : "";
 }
 
+function logError(context: string, error: unknown) {
+  if (error instanceof Error) {
+    const details = error as Error & {
+      code?: string;
+      command?: string;
+      response?: string;
+      responseCode?: number;
+    };
+
+    console.error(context, {
+      message: details.message,
+      code: details.code,
+      command: details.command,
+      responseCode: details.responseCode,
+      response: details.response,
+      stack: details.stack,
+    });
+    return;
+  }
+
+  console.error(context, error);
+}
+
 export async function handleSendEmail(request: Request) {
   try {
     const formData = await request.formData();
@@ -423,12 +446,12 @@ export async function handleSendEmail(request: Request) {
         }),
       });
     } catch (replyError) {
-      console.error("Failed to send auto-reply email:", replyError);
+      logError("Failed to send auto-reply email:", replyError);
     }
 
     return Response.json({ ok: true, messageId: info.messageId });
   } catch (error) {
-    console.error("Failed to send quote request email:", error);
+    logError("Failed to send quote request email:", error);
     return jsonError("Email service is not configured or unavailable.", 500);
   }
 }
