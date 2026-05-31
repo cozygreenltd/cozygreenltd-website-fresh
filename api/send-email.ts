@@ -1,11 +1,12 @@
 import type { IncomingHttpHeaders, IncomingMessage, ServerResponse } from "node:http";
-import { Readable } from "node:stream";
 import nodemailer from "nodemailer";
 import { z } from "zod";
 
 const MAX_ATTACHMENTS = 5;
 const MAX_ATTACHMENT_BYTES = 5 * 1024 * 1024;
 const MAX_TOTAL_ATTACHMENT_BYTES = 15 * 1024 * 1024;
+const MAX_REQUEST_BYTES = 20 * 1024 * 1024;
+const BODY_READ_TIMEOUT_MS = 15_000;
 const THEME = {
   background: "#f7fbf6",
   surface: "#ffffff",
@@ -559,7 +560,72 @@ function toHeadersInit(headers: IncomingHttpHeaders) {
   return entries;
 }
 
-function createRequestFromNode(request: IncomingMessage) {
+function getBufferedBody(request: IncomingMessage) {
+  const body = (request as IncomingMessage & { body?: unknown; rawBody?: unknown }).body;
+  const rawBody = (request as IncomingMessage & { body?: unknown; rawBody?: unknown }).rawBody;
+
+  if (Buffer.isBuffer(rawBody)) return rawBody;
+  if (rawBody instanceof Uint8Array) return Buffer.from(rawBody);
+  if (typeof rawBody === "string") return Buffer.from(rawBody);
+  if (Buffer.isBuffer(body)) return body;
+  if (body instanceof Uint8Array) return Buffer.from(body);
+  if (typeof body === "string") return Buffer.from(body);
+
+  return null;
+}
+
+function readNodeRequestBody(request: IncomingMessage) {
+  const bufferedBody = getBufferedBody(request);
+  if (bufferedBody) {
+    return Promise.resolve(bufferedBody);
+  }
+
+  return new Promise<Buffer>((resolve, reject) => {
+    const chunks: Buffer[] = [];
+    let totalBytes = 0;
+
+    const timeout = setTimeout(() => {
+      cleanup();
+      reject(new Error("Timed out while reading request body."));
+    }, BODY_READ_TIMEOUT_MS);
+
+    function cleanup() {
+      clearTimeout(timeout);
+      request.off("data", onData);
+      request.off("end", onEnd);
+      request.off("error", onError);
+    }
+
+    function onData(chunk: Buffer | string) {
+      const buffer = Buffer.isBuffer(chunk) ? chunk : Buffer.from(chunk);
+      totalBytes += buffer.byteLength;
+
+      if (totalBytes > MAX_REQUEST_BYTES) {
+        cleanup();
+        reject(new Error("Request body is too large."));
+        return;
+      }
+
+      chunks.push(buffer);
+    }
+
+    function onEnd() {
+      cleanup();
+      resolve(Buffer.concat(chunks));
+    }
+
+    function onError(error: Error) {
+      cleanup();
+      reject(error);
+    }
+
+    request.on("data", onData);
+    request.on("end", onEnd);
+    request.on("error", onError);
+  });
+}
+
+async function createRequestFromNode(request: IncomingMessage) {
   const protocol = getFirstHeader(request.headers["x-forwarded-proto"]) ?? "https";
   const host = getFirstHeader(request.headers.host) ?? "localhost";
   const url = new URL(request.url ?? "/", `${protocol}://${host}`);
@@ -570,8 +636,8 @@ function createRequestFromNode(request: IncomingMessage) {
   };
 
   if (method !== "GET" && method !== "HEAD") {
-    init.body = Readable.toWeb(request) as ReadableStream;
-    init.duplex = "half";
+    const body = await readNodeRequestBody(request);
+    init.body = new Uint8Array(body);
   }
 
   return new Request(url, init);
@@ -599,6 +665,6 @@ export default async function handler(
     return jsonError("Unsupported server invocation.", 500);
   }
 
-  const webResponse = await routeSendEmail(createRequestFromNode(request));
+  const webResponse = await routeSendEmail(await createRequestFromNode(request));
   await sendNodeResponse(response, webResponse);
 }
