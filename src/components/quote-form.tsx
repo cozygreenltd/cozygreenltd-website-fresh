@@ -1,6 +1,5 @@
-// Quote request form with validation, image uploads, and a simulated submit flow.
+// Quote request form with validation, image uploads, and a real email submit flow.
 import { useEffect, useRef, useState } from "react";
-import { z } from "zod";
 import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -16,16 +15,7 @@ import {
 import { ImagePlus, Upload, X } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { AnimatedImage } from "@/components/animated-image";
-
-const schema = z.object({
-  // Basic contact details are validated before the form is accepted.
-  name: z.string().trim().min(2, "Please enter your name").max(80),
-  email: z.string().trim().email("Invalid email").max(255),
-  phone: z.string().trim().min(7, "Enter a valid phone").max(30),
-  address: z.string().trim().min(5, "Please enter the project address").max(180),
-  service: z.string().min(1, "Select a service"),
-  message: z.string().trim().max(1000).optional(),
-});
+import { quoteRequestSchema } from "@/lib/quote-request";
 
 const SERVICES = [
   "Lawn Maintenance",
@@ -50,7 +40,7 @@ export function QuoteForm({
   variant?: "card" | "plain";
   defaultService?: string;
 }) {
-  // Form state is kept local because submissions are only simulated in this static build.
+  // Form state stays local; the browser sends the payload directly to the API route.
   const [form, setForm] = useState({
     name: "",
     email: "",
@@ -101,17 +91,37 @@ export function QuoteForm({
     };
   }, [attachments]);
 
-  const submit = (e: React.FormEvent) => {
-    // Validate locally, then simulate a short network delay before showing success feedback.
+  const submit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    const r = schema.safeParse(form);
+    const r = quoteRequestSchema.safeParse(form);
     if (!r.success) {
       toast.error(r.error.issues[0].message);
       return;
     }
     setSubmitting(true);
-    setTimeout(() => {
-      setSubmitting(false);
+    try {
+      const payload = new FormData();
+      Object.entries(r.data).forEach(([key, value]) => {
+        payload.append(key, value ?? "");
+      });
+      attachments.forEach((item) => {
+        payload.append("attachments", item.file, item.file.name);
+      });
+
+      const response = await fetch("/api/send-email", {
+        method: "POST",
+        body: payload,
+      });
+
+      const result = (await response.json().catch(() => null)) as {
+        ok?: boolean;
+        error?: string;
+      } | null;
+
+      if (!response.ok) {
+        throw new Error(result?.error ?? "Failed to send your request.");
+      }
+
       toast.success(
         attachments.length
           ? `Thanks! We'll be in touch within 24 hours. (${attachments.length} image${attachments.length === 1 ? "" : "s"} attached)`
@@ -127,7 +137,13 @@ export function QuoteForm({
       });
       attachments.forEach((item) => URL.revokeObjectURL(item.url));
       setAttachments([]);
-    }, 700);
+    } catch (error) {
+      toast.error(
+        error instanceof Error ? error.message : "Something went wrong sending the form.",
+      );
+    } finally {
+      setSubmitting(false);
+    }
   };
 
   const wrapper =
