@@ -1,4 +1,3 @@
-// Quote request form with validation, image uploads, and a real email submit flow.
 import { useEffect, useRef, useState } from "react";
 import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
@@ -16,6 +15,10 @@ import { ImagePlus, Upload, X } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { AnimatedImage } from "@/components/animated-image";
 import { quoteRequestSchema } from "@/lib/quote-request";
+
+const MAX_ATTACHMENTS = 5;
+const MAX_ATTACHMENT_BYTES = 5 * 1024 * 1024;
+const MAX_TOTAL_ATTACHMENT_BYTES = 15 * 1024 * 1024;
 
 const SERVICES = [
   "Lawn Maintenance",
@@ -57,22 +60,43 @@ export function QuoteForm({
   const onChange = (k: string, v: string) => setForm((f) => ({ ...f, [k]: v }));
 
   const addFiles = (files: FileList | File[]) => {
-    // Only image files are accepted, and duplicate selections are ignored by ID.
     const incoming = Array.from(files).filter((file) => file.type.startsWith("image/"));
     if (!incoming.length) return;
 
+    const oversizedFiles: string[] = [];
+
     setAttachments((current) => {
+      const currentTotal = current.reduce((sum, a) => sum + a.file.size, 0);
       const currentIds = new Set(current.map((item) => item.id));
-      const next = incoming
-        .map((file) => ({
-          id: `${file.name}-${file.size}-${file.lastModified}`,
-          file,
-          url: URL.createObjectURL(file),
-        }))
-        .filter((item) => !currentIds.has(item.id));
+
+      const next: Attachment[] = [];
+
+      for (const file of incoming) {
+        const id = `${file.name}-${file.size}-${file.lastModified}`;
+        if (currentIds.has(id)) continue;
+
+        if (file.size > MAX_ATTACHMENT_BYTES) {
+          oversizedFiles.push(file.name);
+          continue;
+        }
+
+        const runningTotal = currentTotal + next.reduce((sum, a) => sum + a.file.size, 0) + file.size;
+        if (runningTotal > MAX_TOTAL_ATTACHMENT_BYTES) {
+          oversizedFiles.push(file.name);
+          continue;
+        }
+
+        next.push({ id, file, url: URL.createObjectURL(file) });
+      }
 
       return [...current, ...next];
     });
+
+    if (oversizedFiles.length > 0) {
+      toast.error(
+        `Some files were skipped — each image must be under 5 MB and total under 15 MB.`,
+      );
+    }
   };
 
   const removeAttachment = (id: string) => {
@@ -278,37 +302,44 @@ export function QuoteForm({
               </div>
               <div className="font-medium">Drag and drop photos here</div>
               <p className="text-sm text-muted-foreground">
-                or click to browse local files. PNG, JPG, WEBP supported.
+                or click to browse. PNG, JPG, WEBP — 5 MB max each, 15 MB total.
               </p>
             </div>
           </div>
           {attachments.length > 0 && (
-            <div className="mt-4 grid grid-cols-2 gap-3 sm:grid-cols-3">
-              {attachments.map((item) => (
-                <div
-                  key={item.id}
-                  className="group relative overflow-hidden rounded-xl border border-border bg-card"
-                >
-                  <AnimatedImage
-                    src={item.url}
-                    alt={item.file.name}
-                    className="h-28 w-full object-cover"
-                    zoomDuration={9}
-                  />
-                  <button
-                    type="button"
-                    onClick={() => removeAttachment(item.id)}
-                    className="absolute right-2 top-2 rounded-full bg-black/70 p-1 text-white opacity-90 transition-opacity hover:opacity-100"
-                    aria-label={`Remove ${item.file.name}`}
+            <div className="mt-4">
+              <div className="mb-2 text-xs text-muted-foreground">
+                {attachments.length} of {MAX_ATTACHMENTS} images used
+                {" · "}
+                {(attachments.reduce((s, a) => s + a.file.size, 0) / (1024 * 1024)).toFixed(1)} of 15 MB
+              </div>
+              <div className="grid grid-cols-2 gap-3 sm:grid-cols-3">
+                {attachments.map((item) => (
+                  <div
+                    key={item.id}
+                    className="group relative overflow-hidden rounded-xl border border-border bg-card"
                   >
-                    <X className="h-4 w-4" />
-                  </button>
-                  <div className="flex items-center gap-2 p-3">
-                    <ImagePlus className="h-4 w-4 text-primary" />
-                    <span className="truncate text-xs text-muted-foreground">{item.file.name}</span>
+                    <AnimatedImage
+                      src={item.url}
+                      alt={item.file.name}
+                      className="h-28 w-full object-cover"
+                      zoomDuration={9}
+                    />
+                    <button
+                      type="button"
+                      onClick={() => removeAttachment(item.id)}
+                      className="absolute right-2 top-2 rounded-full bg-black/70 p-1 text-white opacity-90 transition-opacity hover:opacity-100"
+                      aria-label={`Remove ${item.file.name}`}
+                    >
+                      <X className="h-4 w-4" />
+                    </button>
+                    <div className="flex items-center gap-2 p-3">
+                      <ImagePlus className="h-4 w-4 text-primary" />
+                      <span className="truncate text-xs text-muted-foreground">{item.file.name}</span>
+                    </div>
                   </div>
-                </div>
-              ))}
+                ))}
+              </div>
             </div>
           )}
         </div>
